@@ -19,7 +19,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onReset,
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="settings-panel">
       <Card title="軸の設定" className="card fade-in">
         <div className="space-y-4">
           <div>

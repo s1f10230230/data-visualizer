@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Upload, message, Checkbox } from "antd";
+import { Card, Upload, message, Checkbox, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 
@@ -8,6 +8,8 @@ interface FileUploadProps {
   fileName: string | null;
   hasHeader: boolean;
   onHeaderChange: (hasHeader: boolean) => void;
+  encoding: string;
+  onEncodingChange: (encoding: string) => void;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -15,6 +17,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
   fileName,
   hasHeader,
   onHeaderChange,
+  encoding,
+  onEncodingChange,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
 
@@ -84,12 +88,27 @@ const FileUpload: React.FC<FileUploadProps> = ({
         </Upload>
       </div>
       <div style={{ marginTop: "16px", padding: "0 16px 16px" }}>
-        <Checkbox
-          checked={hasHeader}
-          onChange={(e) => onHeaderChange(e.target.checked)}
-        >
-          1行目をヘッダーとして扱う
-        </Checkbox>
+        <div className="space-y-4">
+          <Checkbox
+            checked={hasHeader}
+            onChange={(e) => onHeaderChange(e.target.checked)}
+          >
+            1行目をヘッダーとして扱う
+          </Checkbox>
+          <div>
+            <p className="mb-2">ファイルの文字エンコーディング:</p>
+            <Select
+              value={encoding}
+              onChange={onEncodingChange}
+              style={{ width: "100%" }}
+              options={[
+                { value: "Shift-JIS", label: "Shift-JIS (日本語)" },
+                { value: "UTF-8", label: "UTF-8" },
+                { value: "EUC-JP", label: "EUC-JP" },
+              ]}
+            />
+          </div>
+        </div>
       </div>
     </Card>
   );

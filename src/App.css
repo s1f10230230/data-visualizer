@@ -142,6 +142,39 @@
   position: relative;
 }
 
+.statistics-panel {
+  margin-top: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sample-data-alert {
+  margin: 1rem 0;
+}
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-panel .card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .settings-panel .card {
+    background-color: #2d3748;
+  }
+}
+
 @media (max-width: 768px) {
   .content-wrapper {
     flex-direction: column;
@@ -165,5 +198,9 @@
 
   .chart-wrapper {
     height: 300px;
+  }
+
+  .settings-panel {
+    gap: 2rem;
   }
 }
