@@ -5,27 +5,6 @@
   color: #2d3748;
 }
 
-@media (prefers-color-scheme: dark) {
-  .App {
-    background-color: #1a202c;
-    color: #e2e8f0;
-  }
-
-  .chart-container {
-    background-color: #2d3748;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  }
-
-  .header h1,
-  .chart-header h2 {
-    color: #e2e8f0;
-  }
-
-  .file-name {
-    color: #a0aec0;
-  }
-}
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -167,12 +146,6 @@
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .settings-panel .card {
-    background-color: #2d3748;
-  }
 }
 
 @media (max-width: 768px) {

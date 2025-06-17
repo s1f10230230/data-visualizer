@@ -256,28 +256,3 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-
-/* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-color: #1f1f1f;
-    --card-background: #2f2f2f;
-    --text-color: #ffffff;
-  }
-
-  .card {
-    background: var(--card-background);
-  }
-
-  .upload-area {
-    background: rgba(47, 47, 47, 0.8);
-  }
-
-  .upload-area:hover {
-    background: rgba(24, 144, 255, 0.1);
-  }
-
-  .footer {
-    background: var(--card-background);
-  }
-}
