@@ -1,6 +1,7 @@
 export interface ChartData {
   features: string[];
   records: (string | number)[][];
+  isSample?: boolean;
 }
 
 export interface GraphSettings {

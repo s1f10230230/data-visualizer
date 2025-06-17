@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo } from "react";
-import { message } from "antd";
+import { message, Alert } from "antd";
 import * as echarts from "echarts";
 import type { EChartsOption, PieSeriesOption } from "echarts";
 import FileUpload from "./components/FileUpload";
@@ -12,6 +12,7 @@ import FeedbackForm from "./components/FeedbackForm";
 import useGraphSettings from "./hooks/useGraphSettings";
 import { parseFile } from "./utils/dataParser";
 import type { ChartData } from "./types/index";
+import StatisticsPanel from "./components/StatisticsPanel";
 
 // 統計計算用の関数
 const calculateBoxplotData = (values: number[]): number[] => {
@@ -50,6 +51,7 @@ const App: React.FC = () => {
     []
   );
   const [hasHeader, setHasHeader] = React.useState<boolean>(true);
+  const [encoding, setEncoding] = React.useState<string>("Shift-JIS");
 
   const { settings, updateSettings } = useGraphSettings();
 
@@ -68,6 +70,7 @@ const App: React.FC = () => {
         ["5月", 70, 40, 50],
         ["6月", 110, 60, 80],
       ],
+      isSample: true, // サンプルデータであることを示すフラグ
     }),
     []
   );
@@ -75,7 +78,7 @@ const App: React.FC = () => {
   const handleFileSelect = async (selectedFile: File) => {
     setFile(selectedFile);
     try {
-      const data = await parseFile(selectedFile, hasHeader);
+      const data = await parseFile(selectedFile, hasHeader, encoding);
       setChartData(data);
       setAvailableFeatures(data.features);
 
@@ -283,12 +286,9 @@ const App: React.FC = () => {
                     },
                   ],
                 },
-                label: {
-                  show: true,
-                  formatter: (params: any) => {
-                    return `相関係数: ${correlation.toFixed(3)}`;
-                  },
-                  position: "top",
+                title: {
+                  text: `相関係数: ${correlation.toFixed(2)}`,
+                  left: "center",
                 },
               };
             case "area":
@@ -567,12 +567,9 @@ const App: React.FC = () => {
                   },
                 ],
               },
-              label: {
-                show: true,
-                formatter: (params: any) => {
-                  return `相関係数: ${correlation.toFixed(3)}`;
-                },
-                position: "top",
+              title: {
+                text: `相関係数: ${correlation.toFixed(2)}`,
+                left: "center",
               },
             };
           case "area":
@@ -655,6 +652,8 @@ const App: React.FC = () => {
             fileName={file?.name || null}
             hasHeader={hasHeader}
             onHeaderChange={setHasHeader}
+            encoding={encoding}
+            onEncodingChange={setEncoding}
           />
 
           <SettingsPanel
@@ -668,7 +667,34 @@ const App: React.FC = () => {
         {/* 中央：グラフプレビューエリア */}
         <div className="main-content">
           <ChartPreview chartOptions={chartOptions} zoom={settings.zoom} />
+          {chartData?.isSample && (
+            <Alert
+              message="サンプルデータ"
+              description="現在表示されているのはサンプルデータです。CSVファイルをアップロードして、実際のデータでグラフを作成できます。"
+              type="info"
+              showIcon
+              className="sample-data-alert"
+            />
+          )}
           <DataPreview data={chartData || sampleData} />
+          <StatisticsPanel
+            data={{
+              xData:
+                chartData?.records.map((record) =>
+                  Number(
+                    record[chartData.features.indexOf(settings.xAxisFeature)]
+                  )
+                ) || [],
+              yData:
+                chartData?.records.map((record) =>
+                  Number(
+                    record[
+                      chartData.features.indexOf(settings.yAxisFeatures[0])
+                    ]
+                  )
+                ) || [],
+            }}
+          />
         </div>
 
         {/* 右側：カスタマイズパネル */}
