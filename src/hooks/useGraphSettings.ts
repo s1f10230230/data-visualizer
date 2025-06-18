@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { message } from "antd";
-import type { GraphSettings, SavedSettings } from "../types/index";
+import type { GraphSettings, SavedSettings } from "../types";
 
 const STORAGE_KEY = "graphSettings";
 

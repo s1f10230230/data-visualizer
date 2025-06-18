@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, memo } from "react";
 import { Card, Button, Tooltip, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import * as echarts from "echarts";
@@ -9,7 +9,7 @@ interface ChartPreviewProps {
   zoom: number;
 }
 
-const ChartPreview: React.FC<ChartPreviewProps> = ({ chartOptions, zoom }) => {
+const ChartPreview = memo<ChartPreviewProps>(({ chartOptions, zoom }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<echarts.ECharts | null>(null);
 
@@ -85,12 +85,17 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({ chartOptions, zoom }) => {
       <div className="chart-container fade-in">
         <div
           ref={chartRef}
-          className="w-full h-[600px] transition-transform origin-top-left"
-          style={{ minHeight: "600px", transform: `scale(${zoom / 100})` }}
+          className="w-full transition-transform origin-top-left"
+          style={{
+            minHeight: "600px",
+            height: "600px",
+            transform: `scale(${zoom / 100})`,
+            padding: "10px",
+          }}
         ></div>
       </div>
     </Card>
   );
-};
+});
 
 export default ChartPreview;

@@ -1,4 +1,4 @@
-import type { ChartData } from "../types";
+import type { ChartData } from "../types/index";
 
 export const parseCSV = async (file: File): Promise<ChartData> => {
   return new Promise((resolve, reject) => {

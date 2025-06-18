@@ -6,13 +6,12 @@ import type { ChangeEvent } from "react";
 import {
   BarChartOutlined,
   LineChartOutlined,
-  PieChartOutlined,
   DotChartOutlined,
   AreaChartOutlined,
   BoxPlotOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import type { GraphSettings } from "../types";
+import type { GraphSettings } from "../types/index";
 
 interface CustomizationPanelProps {
   settings: GraphSettings;
@@ -30,7 +29,6 @@ const CustomizationPanel: React.FC<CustomizationPanelProps> = ({
       icon: <LineChartOutlined />,
       label: "折れ線グラフ",
     },
-    { type: "pie" as const, icon: <PieChartOutlined />, label: "円グラフ" },
     { type: "scatter" as const, icon: <DotChartOutlined />, label: "散布図" },
     { type: "area" as const, icon: <AreaChartOutlined />, label: "累積グラフ" },
     { type: "boxplot" as const, icon: <BoxPlotOutlined />, label: "箱ひげ図" },
@@ -47,15 +45,6 @@ const CustomizationPanel: React.FC<CustomizationPanelProps> = ({
               icon={button.icon}
               onClick={() => {
                 onSettingsChange({ chartType: button.type });
-                if (
-                  button.type === "pie" &&
-                  settings.yAxisFeatures.length > 1
-                ) {
-                  onSettingsChange({
-                    yAxisFeatures: [settings.yAxisFeatures[0]],
-                  });
-                  message.info("円グラフでは1つのY軸特徴量のみ表示できます");
-                }
               }}
               size="large"
             >
