@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useMemo } from "react";
 import { message, Alert } from "antd";
 import * as echarts from "echarts";
-import type { EChartsOption, PieSeriesOption } from "echarts";
+import type { EChartsOption } from "echarts";
 import FileUpload from "./components/FileUpload";
 import Header from "./components/Header";
 import ChartPreview from "./components/ChartPreview";
@@ -11,7 +11,7 @@ import DataPreview from "./components/DataPreview";
 import FeedbackForm from "./components/FeedbackForm";
 import useGraphSettings from "./hooks/useGraphSettings";
 import { parseFile } from "./utils/dataParser";
-import type { ChartData } from "./types/index";
+import type { ChartData } from "./types";
 import StatisticsPanel from "./components/StatisticsPanel";
 
 // 統計計算用の関数
@@ -77,7 +77,9 @@ const App: React.FC = () => {
 
   const handleFileSelect = async (selectedFile: File) => {
     setFile(selectedFile);
+    message.loading("ファイルを解析中...", 0); // 解析中のメッセージを表示
     try {
+      // Web Worker経由でファイル解析
       const data = await parseFile(selectedFile, hasHeader, encoding);
       setChartData(data);
       setAvailableFeatures(data.features);
@@ -89,9 +91,12 @@ const App: React.FC = () => {
           yAxisFeatures: data.features.slice(1, 2),
         });
       }
+      message.success("ファイルの解析に成功しました");
     } catch (error) {
       message.error("ファイルの解析に失敗しました");
       console.error("File parsing error:", error);
+    } finally {
+      message.destroy(); // ローディングメッセージを閉じる
     }
   };
 
@@ -207,11 +212,26 @@ const App: React.FC = () => {
           data: settings.yAxisFeatures,
           orient: "horizontal",
           [settings.legendPosition]: 10,
+          top: settings.legendPosition === "top" ? 50 : undefined,
+          bottom: settings.legendPosition === "bottom" ? 10 : undefined,
+          left: settings.legendPosition === "left" ? 10 : undefined,
+          right: settings.legendPosition === "right" ? 10 : undefined,
+          width:
+            settings.legendPosition === "left" ||
+            settings.legendPosition === "right"
+              ? 120
+              : undefined,
+          height:
+            settings.legendPosition === "top" ||
+            settings.legendPosition === "bottom"
+              ? 60
+              : undefined,
         },
         grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
+          left: settings.legendPosition === "left" ? "15%" : "3%",
+          right: settings.legendPosition === "right" ? "15%" : "4%",
+          top: settings.legendPosition === "top" ? "15%" : "10%",
+          bottom: settings.legendPosition === "bottom" ? "15%" : "10%",
           containLabel: true,
         },
         xAxis: {
@@ -238,6 +258,9 @@ const App: React.FC = () => {
                   seriesIndex % settings.colorPalette.length
                 ],
             },
+            // パフォーマンス最適化設定
+            large: true,
+            largeThreshold: 1000, // 1000件以上のデータでlargeモードを有効にする
           };
 
           switch (settings.chartType) {
@@ -338,47 +361,20 @@ const App: React.FC = () => {
               };
           }
         }),
-      };
-
-      // 円グラフの場合は特別な処理
-      if (settings.chartType === "pie" && yIndices.length > 0) {
-        delete option.xAxis;
-        delete option.yAxis;
-
-        const yIndex = yIndices[0];
-
-        const pieData = data.records.map((record: (string | number)[]) => ({
-          name: record[xIndex],
-          value: record[yIndex],
-        }));
-
-        const pieOption: EChartsOption = {
-          tooltip: {
-            trigger: "item",
-            formatter: "{a} <br/>{b}: {c} ({d}%)",
+        dataZoom: [
+          {
+            type: "inside",
+            start: 0,
+            end: 100,
           },
-          series: [
-            {
-              type: "pie",
-              radius: "50%",
-              center: ["50%", "50%"],
-              data: pieData,
-              itemStyle: {
-                color: (params: any) => {
-                  return settings.colorPalette[
-                    params.dataIndex % settings.colorPalette.length
-                  ];
-                },
-              },
-              label: {
-                formatter: "{b}: {d}%",
-              },
-            },
-          ] as PieSeriesOption[],
-        };
-
-        option.series = pieOption.series;
-      }
+          {
+            type: "slider",
+            start: 0,
+            end: 100,
+            bottom: "5%",
+          },
+        ],
+      };
 
       chartInstance.current.setOption(option as any, true);
 
@@ -490,11 +486,26 @@ const App: React.FC = () => {
         data: settings.yAxisFeatures,
         orient: "horizontal",
         [settings.legendPosition]: 10,
+        top: settings.legendPosition === "top" ? 50 : undefined,
+        bottom: settings.legendPosition === "bottom" ? 10 : undefined,
+        left: settings.legendPosition === "left" ? 10 : undefined,
+        right: settings.legendPosition === "right" ? 10 : undefined,
+        width:
+          settings.legendPosition === "left" ||
+          settings.legendPosition === "right"
+            ? 120
+            : undefined,
+        height:
+          settings.legendPosition === "top" ||
+          settings.legendPosition === "bottom"
+            ? 60
+            : undefined,
       },
       grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "3%",
+        left: settings.legendPosition === "left" ? "15%" : "3%",
+        right: settings.legendPosition === "right" ? "15%" : "4%",
+        top: settings.legendPosition === "top" ? "15%" : "10%",
+        bottom: settings.legendPosition === "bottom" ? "15%" : "10%",
         containLabel: true,
       },
       xAxis: {
@@ -519,6 +530,9 @@ const App: React.FC = () => {
             color:
               settings.colorPalette[seriesIndex % settings.colorPalette.length],
           },
+          // パフォーマンス最適化設定
+          large: true,
+          largeThreshold: 1000, // 1000件以上のデータでlargeモードを有効にする
         };
 
         switch (settings.chartType) {
@@ -619,6 +633,19 @@ const App: React.FC = () => {
             };
         }
       }),
+      dataZoom: [
+        {
+          type: "inside",
+          start: 0,
+          end: 100,
+        },
+        {
+          type: "slider",
+          start: 0,
+          end: 100,
+          bottom: "5%",
+        },
+      ],
     };
 
     return option;
@@ -708,7 +735,7 @@ const App: React.FC = () => {
       </div>
 
       <footer className="footer fade-in">
-        <p>© 2024 データビジュアライザー. All rights reserved.</p>
+        <p>© 2025 suio shion. All rights reserved.</p>
         <p className="mt-1">
           今日の日付:{" "}
           {new Date().toLocaleDateString("ja-JP", {

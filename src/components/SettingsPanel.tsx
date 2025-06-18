@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Select, InputNumber, Button, Radio, message } from "antd";
 import type { RadioChangeEvent } from "antd/es/radio";
-import type { GraphSettings } from "../types";
+import type { GraphSettings } from "../types/index";
 
 const { Option } = Select;
 

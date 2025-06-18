@@ -5,7 +5,7 @@ export interface ChartData {
 }
 
 export interface GraphSettings {
-  chartType: "bar" | "line" | "pie" | "scatter" | "area" | "boxplot";
+  chartType: "bar" | "line" | "scatter" | "area" | "boxplot";
   xAxisFeature: string;
   yAxisFeatures: string[];
   xAxisLabel: string;
@@ -23,4 +23,12 @@ export interface GraphSettings {
 export interface SavedSettings extends GraphSettings {
   timestamp: string;
   name: string;
+}
+
+export type ChartType = "bar" | "line" | "scatter" | "area" | "boxplot";
+
+export interface ChartTypeButton {
+  type: ChartType;
+  icon: React.ReactNode;
+  label: string;
 }
